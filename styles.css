@@ -190,12 +190,17 @@ textarea {
 }
 
 .winner-name {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
     font-weight: bold;
     color: var(--background-color);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    max-width: 100%;
 }
 
 .result-info {
@@ -263,13 +268,19 @@ textarea {
 }
 
 .last-winner-item {
-    font-size: clamp(1rem, 2.5vw, 1.5rem);
+    font-size: clamp(0.85rem, 2vw, 1.2rem);
     color: #151515;
     padding: 0.5rem;
     background-color: #FFFFFF;
     border-radius: 0.5rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     flex-shrink: 0;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    text-align: left;
+    margin-bottom: 0.25rem;
 }
 
 footer {

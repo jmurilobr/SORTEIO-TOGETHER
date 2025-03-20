@@ -62,10 +62,102 @@ function handleFileUpload(event) {
 }
 
 function parseParticipants(content) {
-    return content
-        .split(/[\n,]+/)
-        .map(name => name.trim())
-        .filter(name => name.length > 0);
+    try {
+        // Verificar se o conteúdo parece ser um CSV do Google Forms
+        if (content.includes("Carimbo de data/hora") && content.includes("Nome completo:")) {
+            // Processar como CSV no novo formato do Google Forms
+            const lines = content.split('\n').filter(line => line.trim().length > 0);
+            
+            // Primeira linha contém os cabeçalhos
+            const headers = parseCSVLine(lines[0]);
+            
+            // Encontrar os índices das colunas necessárias
+            const nomeIndex = headers.findIndex(h => h.includes("Nome completo:"));
+            const igrejaCidadeIndex = headers.findIndex(h => h.includes("Qual sua Igreja, Distrito e Cidade?"));
+            
+            if (nomeIndex === -1 || igrejaCidadeIndex === -1) {
+                throw new Error("Formato de CSV inválido: colunas necessárias não encontradas");
+            }
+            
+            // Processar as linhas de dados (pular o cabeçalho)
+            return lines.slice(1).map(line => {
+                const columns = parseCSVLine(line);
+                if (columns.length <= Math.max(nomeIndex, igrejaCidadeIndex)) {
+                    return null; // Linha inválida
+                }
+                
+                // Combinar nome e igreja/cidade
+                let nome = corrigirAcentuacao(columns[nomeIndex]);
+                let igrejaCidade = corrigirAcentuacao(columns[igrejaCidadeIndex]);
+                
+                return `${nome} / ${igrejaCidade}`;
+            }).filter(entry => entry !== null);
+        } else {
+            // Formato antigo - processar como antes
+            return content
+                .split(/[\n,]+/)
+                .map(name => name.trim())
+                .filter(name => name.length > 0);
+        }
+    } catch (error) {
+        console.error("Erro ao processar participantes:", error);
+        // Em caso de erro, retornar array vazio
+        return [];
+    }
+}
+
+// Função para processar linha de CSV respeitando aspas
+function parseCSVLine(line) {
+    const result = [];
+    let current = "";
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current);
+            current = "";
+        } else {
+            current += char;
+        }
+    }
+    
+    // Adicionar o último valor
+    result.push(current);
+    
+    return result;
+}
+
+// Função para corrigir problemas de acentuação
+function corrigirAcentuacao(texto) {
+    if (!texto) return "";
+    
+    return texto
+        .replace(/Ã£/g, 'ã')
+        .replace(/Ã¡/g, 'á')
+        .replace(/Ã©/g, 'é')
+        .replace(/Ã­/g, 'í')
+        .replace(/Ã³/g, 'ó')
+        .replace(/Ãº/g, 'ú')
+        .replace(/Ã§/g, 'ç')
+        .replace(/Ãµ/g, 'õ')
+        .replace(/Ã¢/g, 'â')
+        .replace(/Ãª/g, 'ê')
+        .replace(/Ã´/g, 'ô')
+        .replace(/Ã/g, 'Á')
+        .replace(/Ã‰/g, 'É')
+        .replace(/Ã"/g, 'Ó')
+        .replace(/Ãš/g, 'Ú')
+        .replace(/Ã‡/g, 'Ç')
+        .replace(/Ã"/g, 'Õ')
+        .replace(/Ã‚/g, 'Â')
+        .replace(/ÃŠ/g, 'Ê')
+        .replace(/Ã"/g, 'Ô')
+        .replace(/Ã³/g, 'ó')
+        .replace(/Ã¢/g, 'â');
 }
 
 function updateParticipantsCount() {
@@ -75,13 +167,27 @@ function updateParticipantsCount() {
 
 function updateLastWinners(winner) {
     lastWinnersList.unshift(winner);
-    if (lastWinnersList.length > 2) {
+    if (lastWinnersList.length > 3) {
         lastWinnersList.pop();
     }
 
-    const items = lastWinners.children;
-    for (let i = 0; i < items.length; i++) {
-        items[i].textContent = lastWinnersList[i] || '-';
+    // Limpar elementos existentes
+    lastWinners.innerHTML = '';
+    
+    // Criar novos elementos para cada vencedor
+    lastWinnersList.forEach(winnerText => {
+        const div = document.createElement('div');
+        div.className = 'last-winner-item';
+        div.textContent = winnerText;
+        lastWinners.appendChild(div);
+    });
+    
+    // Se não houver vencedores ainda, exibir um placeholder
+    if (lastWinnersList.length === 0) {
+        const div = document.createElement('div');
+        div.className = 'last-winner-item';
+        div.textContent = '-';
+        lastWinners.appendChild(div);
     }
 }
 
@@ -101,6 +207,9 @@ function performDraw() {
     const interval = 50; // Atualiza a cada 50ms
     const steps = duration / interval;
 
+    // Desabilitar botão durante o sorteio
+    drawButton.disabled = true;
+
     const animation = setInterval(() => {
         const randomIndex = Math.floor(Math.random() * availableParticipants.length);
         winnerName.textContent = availableParticipants[randomIndex];
@@ -113,6 +222,9 @@ function performDraw() {
             drawnParticipants.add(winner);
             resultInfo.textContent = `Participantes restantes: ${availableParticipants.length - 1}`;
             updateLastWinners(winner);
+            
+            // Reabilitar botão após o sorteio
+            drawButton.disabled = false;
         }
     }, interval);
 }
@@ -127,8 +239,9 @@ function resetApplication() {
     updateParticipantsCount();
     
     // Resetar últimos sorteados
-    const items = lastWinners.children;
-    for (let i = 0; i < items.length; i++) {
-        items[i].textContent = '-';
-    }
+    lastWinners.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'last-winner-item';
+    div.textContent = '-';
+    lastWinners.appendChild(div);
 } 
