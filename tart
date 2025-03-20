@@ -1,0 +1,56 @@
+warning: in the working copy of 'script.js', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/script.js b/script.js[m
+[1mindex e383f58..aef0895 100644[m
+[1m--- a/script.js[m
+[1m+++ b/script.js[m
+[36m@@ -66,7 +66,7 @@[m [mfunction parseParticipants(content) {[m
+         // Verificar se o conteúdo parece ser um CSV do Google Forms[m
+         if (content.includes("Carimbo de data/hora") && content.includes("Nome completo:")) {[m
+             // Processar como CSV no novo formato do Google Forms[m
+[31m-            const lines = content.split('\n').filter(line => line.trim().length > 0);[m
+[32m+[m[32m            const lines = content.split('\n');[m
+             [m
+             // Primeira linha contém os cabeçalhos[m
+             const headers = parseCSVLine(lines[0]);[m
+[36m@@ -79,19 +79,28 @@[m [mfunction parseParticipants(content) {[m
+                 throw new Error("Formato de CSV inválido: colunas necessárias não encontradas");[m
+             }[m
+             [m
+[31m-            // Processar as linhas de dados (pular o cabeçalho)[m
+[31m-            return lines.slice(1).map(line => {[m
+[31m-                const columns = parseCSVLine(line);[m
+[31m-                if (columns.length <= Math.max(nomeIndex, igrejaCidadeIndex)) {[m
+[31m-                    return null; // Linha inválida[m
+[31m-                }[m
+[31m-                [m
+[31m-                // Combinar nome e igreja/cidade[m
+[31m-                let nome = corrigirAcentuacao(columns[nomeIndex]);[m
+[31m-                let igrejaCidade = corrigirAcentuacao(columns[igrejaCidadeIndex]);[m
+[31m-                [m
+[31m-                return `${nome} / ${igrejaCidade}`;[m
+[31m-            }).filter(entry => entry !== null);[m
+[32m+[m[32m            // Processar todas as linhas de dados (pular o cabeçalho)[m
+[32m+[m[32m            return lines.slice(1)[m
+[32m+[m[32m                .filter(line => line.trim().length > 0) // Mantém apenas linhas não vazias[m
+[32m+[m[32m                .map(line => {[m
+[32m+[m[32m                    const columns = parseCSVLine(line);[m
+[32m+[m[41m                    [m
+[32m+[m[32m                    // Obter nome e igreja/cidade, com valores padrão para colunas ausentes[m
+[32m+[m[32m                    let nome = "(Nome não informado)";[m
+[32m+[m[32m                    let igrejaCidade = "(Local não informado)";[m
+[32m+[m[41m                    [m
+[32m+[m[32m                    // Se as colunas existirem, use os valores reais[m
+[32m+[m[32m                    if (columns.length > nomeIndex && columns[nomeIndex]) {[m
+[32m+[m[32m                        nome = corrigirAcentuacao(columns[nomeIndex]);[m
+[32m+[m[32m                    }[m
+[32m+[m[41m                    [m
+[32m+[m[32m                    if (columns.length > igrejaCidadeIndex && columns[igrejaCidadeIndex]) {[m
+[32m+[m[32m                        igrejaCidade = corrigirAcentuacao(columns[igrejaCidadeIndex]);[m
+[32m+[m[32m                    }[m
+[32m+[m[41m                    [m
+[32m+[m[32m                    // Usar o formato "Nome - Igreja/Cidade" consistentemente[m
+[32m+[m[32m                    return `${nome} - ${igrejaCidade}`;[m
+[32m+[m[32m                });[m
+         } else {[m
+             // Formato antigo - processar como antes[m
+             return content[m

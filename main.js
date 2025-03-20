@@ -30,8 +30,17 @@ function createWindow() {
     slashes: true
   }));
 
-  // Abre o DevTools se estiver em desenvolvimento
+  // Abre o DevTools - comentado para ambiente de produção
   // mainWindow.webContents.openDevTools();
+
+  // Adiciona atalho para abrir/fechar DevTools (Ctrl+Shift+I ou F12)
+  mainWindow.webContents.on('before-input-event', (event, input) => {
+    if ((input.control && input.shift && input.key.toLowerCase() === 'i') || 
+        input.key === 'F12') {
+      mainWindow.webContents.toggleDevTools();
+      event.preventDefault();
+    }
+  });
 
   // Encerra o aplicativo quando todas as janelas estiverem fechadas
   mainWindow.on('closed', function () {

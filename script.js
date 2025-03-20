@@ -62,102 +62,142 @@ function handleFileUpload(event) {
 }
 
 function parseParticipants(content) {
-    try {
-        // Verificar se o conteúdo parece ser um CSV do Google Forms
-        if (content.includes("Carimbo de data/hora") && content.includes("Nome completo:")) {
-            // Processar como CSV no novo formato do Google Forms
-            const lines = content.split('\n').filter(line => line.trim().length > 0);
+    // Normaliza a codificação para corrigir acentos e caracteres especiais
+    function normalizeString(str) {
+        // Correções específicas
+        return str
+            .replace(/Ã¢/g, 'â')
+            .replace(/Ã³/g, 'ó')
+            .replace(/Ã©/g, 'é')
+            .replace(/Ã­/g, 'í')
+            .replace(/Ãº/g, 'ú')
+            .replace(/Ã£/g, 'ã')
+            .replace(/Ãµ/g, 'õ')
+            .replace(/Ã§/g, 'ç')
+            .replace(/Ãª/g, 'ê')
+            .replace(/Ã´/g, 'ô')
+            .replace(/Ã /g, 'à')
+            .replace(/Ã¡/g, 'á')
+            .replace(/\u00c3\u00a3/g, 'ã')
+            .replace(/\u00c3\u00b3/g, 'ó');
+    }
+
+    // Verificando se temos o formato do Google Forms CSV (detecção melhorada)
+    const isGoogleFormsCSV = content.includes("Nome completo:") && content.includes("Qual sua Igreja, Distrito e Cidade?");
+    
+    console.log("Formato detectado:", isGoogleFormsCSV ? "Google Forms CSV" : "Formato Padrão");
+    
+    if (isGoogleFormsCSV) {
+        try {
+            // Dividir o conteúdo em linhas
+            const lines = content.split('\n').filter(line => line.trim());
+            console.log(`Encontradas ${lines.length} linhas no CSV`);
             
-            // Primeira linha contém os cabeçalhos
-            const headers = parseCSVLine(lines[0]);
-            
-            // Encontrar os índices das colunas necessárias
-            const nomeIndex = headers.findIndex(h => h.includes("Nome completo:"));
-            const igrejaCidadeIndex = headers.findIndex(h => h.includes("Qual sua Igreja, Distrito e Cidade?"));
-            
-            if (nomeIndex === -1 || igrejaCidadeIndex === -1) {
-                throw new Error("Formato de CSV inválido: colunas necessárias não encontradas");
+            if (lines.length <= 1) {
+                console.error("CSV não contém dados suficientes");
+                return [];
             }
             
-            // Processar as linhas de dados (pular o cabeçalho)
-            return lines.slice(1).map(line => {
-                const columns = parseCSVLine(line);
-                if (columns.length <= Math.max(nomeIndex, igrejaCidadeIndex)) {
-                    return null; // Linha inválida
+            // Identificar índices das colunas no cabeçalho
+            const headerLine = lines[0];
+            // Criar regex para dividir o cabeçalho corretamente
+            // Procuramos por vírgulas que não estão dentro de aspas duplas
+            const headerValues = [];
+            let tempHeader = headerLine;
+            
+            // Extrair os cabeçalhos usando regex
+            // Esta regex captura campos CSV considerando que campos com vírgulas são envolvidos por aspas duplas
+            const headerRegex = /"([^"]*)"|([^,]+)(?=,|$)/g;
+            let match;
+            while ((match = headerRegex.exec(headerLine)) !== null) {
+                // O campo está no primeiro grupo de captura se estava entre aspas,
+                // ou no segundo grupo se não estava
+                const value = match[1] !== undefined ? match[1] : match[0];
+                headerValues.push(value.trim());
+            }
+            
+            console.log(`Cabeçalho processado com ${headerValues.length} colunas`);
+            
+            let nomeIndex = -1;
+            let igrejaIndex = -1;
+            
+            // Encontrar os índices das colunas que precisamos
+            for (let i = 0; i < headerValues.length; i++) {
+                const header = headerValues[i];
+                if (header.includes("Nome completo:")) {
+                    nomeIndex = i;
+                    console.log(`Coluna "Nome completo:" encontrada no índice ${i}`);
+                } else if (header.includes("Qual sua Igreja, Distrito e Cidade?")) {
+                    igrejaIndex = i;
+                    console.log(`Coluna "Igreja" encontrada no índice ${i}`);
                 }
+            }
+            
+            if (nomeIndex === -1 || igrejaIndex === -1) {
+                console.error("Colunas necessárias não encontradas nos cabeçalhos");
+                return processLegacyFormat(content);
+            }
+            
+            // Processar as linhas de dados (ignorando a linha 1 que é o cabeçalho)
+            const participants = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i];
                 
-                // Combinar nome e igreja/cidade
-                let nome = corrigirAcentuacao(columns[nomeIndex]);
-                let igrejaCidade = corrigirAcentuacao(columns[igrejaCidadeIndex]);
-                
-                return `${nome} / ${igrejaCidade}`;
-            }).filter(entry => entry !== null);
-        } else {
-            // Formato antigo - processar como antes
-            return content
-                .split(/[\n,]+/)
-                .map(name => name.trim())
-                .filter(name => name.length > 0);
+                try {
+                    // Processar cada linha usando a mesma abordagem do cabeçalho
+                    const rowValues = [];
+                    const rowRegex = /"([^"]*)"|([^,]+)(?=,|$)/g;
+                    let rowMatch;
+                    
+                    while ((rowMatch = rowRegex.exec(line)) !== null) {
+                        const value = rowMatch[1] !== undefined ? rowMatch[1] : rowMatch[0];
+                        rowValues.push(value.trim());
+                    }
+                    
+                    if (rowValues.length > Math.max(nomeIndex, igrejaIndex)) {
+                        let nome = rowValues[nomeIndex];
+                        let igreja = rowValues[igrejaIndex];
+                        
+                        // Remover aspas extras
+                        nome = nome.replace(/^"+|"+$/g, '').trim();
+                        igreja = igreja.replace(/^"+|"+$/g, '').trim();
+                        
+                        // Normalizar textos
+                        nome = normalizeString(nome);
+                        igreja = normalizeString(igreja);
+                        
+                        if (nome && igreja) {
+                            const participantName = `${nome} / ${igreja}`;
+                            participants.push(participantName);
+                            console.log(`Participante ${i}: ${participantName}`);
+                        }
+                    }
+                } catch (rowError) {
+                    console.error(`Erro ao processar linha ${i}:`, rowError);
+                }
+            }
+            
+            console.log(`Total de participantes processados: ${participants.length}`);
+            return participants;
+        } catch (error) {
+            console.error("Erro ao processar CSV:", error);
+            return processLegacyFormat(content);
         }
-    } catch (error) {
-        console.error("Erro ao processar participantes:", error);
-        // Em caso de erro, retornar array vazio
-        return [];
+    } else {
+        return processLegacyFormat(content);
     }
-}
-
-// Função para processar linha de CSV respeitando aspas
-function parseCSVLine(line) {
-    const result = [];
-    let current = "";
-    let inQuotes = false;
     
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
+    // Função para processar o formato antigo da lista
+    function processLegacyFormat(content) {
+        // No formato antigo, cada linha é um participante
+        const lines = content.split('\n')
+            .map(line => line.trim())
+            .filter(line => line.length > 0);
         
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            result.push(current);
-            current = "";
-        } else {
-            current += char;
-        }
+        // Processa cada linha como um participante
+        return lines.map(line => normalizeString(line));
     }
-    
-    // Adicionar o último valor
-    result.push(current);
-    
-    return result;
-}
-
-// Função para corrigir problemas de acentuação
-function corrigirAcentuacao(texto) {
-    if (!texto) return "";
-    
-    return texto
-        .replace(/Ã£/g, 'ã')
-        .replace(/Ã¡/g, 'á')
-        .replace(/Ã©/g, 'é')
-        .replace(/Ã­/g, 'í')
-        .replace(/Ã³/g, 'ó')
-        .replace(/Ãº/g, 'ú')
-        .replace(/Ã§/g, 'ç')
-        .replace(/Ãµ/g, 'õ')
-        .replace(/Ã¢/g, 'â')
-        .replace(/Ãª/g, 'ê')
-        .replace(/Ã´/g, 'ô')
-        .replace(/Ã/g, 'Á')
-        .replace(/Ã‰/g, 'É')
-        .replace(/Ã"/g, 'Ó')
-        .replace(/Ãš/g, 'Ú')
-        .replace(/Ã‡/g, 'Ç')
-        .replace(/Ã"/g, 'Õ')
-        .replace(/Ã‚/g, 'Â')
-        .replace(/ÃŠ/g, 'Ê')
-        .replace(/Ã"/g, 'Ô')
-        .replace(/Ã³/g, 'ó')
-        .replace(/Ã¢/g, 'â');
 }
 
 function updateParticipantsCount() {
@@ -167,27 +207,13 @@ function updateParticipantsCount() {
 
 function updateLastWinners(winner) {
     lastWinnersList.unshift(winner);
-    if (lastWinnersList.length > 3) {
+    if (lastWinnersList.length > 2) {
         lastWinnersList.pop();
     }
 
-    // Limpar elementos existentes
-    lastWinners.innerHTML = '';
-    
-    // Criar novos elementos para cada vencedor
-    lastWinnersList.forEach(winnerText => {
-        const div = document.createElement('div');
-        div.className = 'last-winner-item';
-        div.textContent = winnerText;
-        lastWinners.appendChild(div);
-    });
-    
-    // Se não houver vencedores ainda, exibir um placeholder
-    if (lastWinnersList.length === 0) {
-        const div = document.createElement('div');
-        div.className = 'last-winner-item';
-        div.textContent = '-';
-        lastWinners.appendChild(div);
+    const items = lastWinners.children;
+    for (let i = 0; i < items.length; i++) {
+        items[i].textContent = lastWinnersList[i] || '-';
     }
 }
 
@@ -207,9 +233,6 @@ function performDraw() {
     const interval = 50; // Atualiza a cada 50ms
     const steps = duration / interval;
 
-    // Desabilitar botão durante o sorteio
-    drawButton.disabled = true;
-
     const animation = setInterval(() => {
         const randomIndex = Math.floor(Math.random() * availableParticipants.length);
         winnerName.textContent = availableParticipants[randomIndex];
@@ -222,9 +245,6 @@ function performDraw() {
             drawnParticipants.add(winner);
             resultInfo.textContent = `Participantes restantes: ${availableParticipants.length - 1}`;
             updateLastWinners(winner);
-            
-            // Reabilitar botão após o sorteio
-            drawButton.disabled = false;
         }
     }, interval);
 }
@@ -239,9 +259,8 @@ function resetApplication() {
     updateParticipantsCount();
     
     // Resetar últimos sorteados
-    lastWinners.innerHTML = '';
-    const div = document.createElement('div');
-    div.className = 'last-winner-item';
-    div.textContent = '-';
-    lastWinners.appendChild(div);
+    const items = lastWinners.children;
+    for (let i = 0; i < items.length; i++) {
+        items[i].textContent = '-';
+    }
 } 
