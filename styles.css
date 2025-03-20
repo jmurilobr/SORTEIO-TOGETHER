@@ -22,6 +22,7 @@ body {
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
+    background-attachment: fixed;
     color: var(--text-color);
     line-height: 1.5;
     margin: 0;
@@ -34,12 +35,17 @@ body {
 }
 
 .container {
-    width: 1000px;
-    height: 680px;
-    margin: 0 auto;
+    width: 80vw;
+    height: 75vh;
+    max-width: 1200px;
+    margin: 0;
     padding: 1.5rem;
     display: flex;
     flex-direction: column;
+    position: fixed;
+    top: 53%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 header {
@@ -67,24 +73,26 @@ header p {
     display: flex;
     flex-direction: column;
     overflow: visible;
-    max-height: 680px;
+    max-height: calc(75vh - 3rem);
 }
 
 .input-section {
     margin-bottom: 1rem;
     text-align: center;
+    flex-shrink: 0;
 }
 
 h2 {
     color: var(--text-color);
     margin-bottom: 1rem;
-    font-size: 1.5rem;
+    font-size: clamp(1.2rem, 3vw, 1.5rem);
 }
 
 .input-group {
     margin-bottom: 1rem;
     display: flex;
     justify-content: center;
+    flex-shrink: 0;
 }
 
 .file-input {
@@ -99,6 +107,7 @@ h2 {
     border-radius: 0.5rem;
     cursor: pointer;
     font-weight: 600;
+    font-size: clamp(0.8rem, 2vw, 1rem);
 }
 
 #fileName {
@@ -125,14 +134,16 @@ textarea {
 .status-info {
     margin-top: 1rem;
     color: var(--secondary-color);
-    font-size: 1.1rem;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    flex-shrink: 0;
 }
 
 .controls {
     display: flex;
     gap: 1.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     padding: 0 3rem;
+    flex-shrink: 0;
 }
 
 .primary-button, .secondary-button {
@@ -140,8 +151,8 @@ textarea {
     border-radius: 0.5rem;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
     border: none;
+    font-size: clamp(0.8rem, 2vw, 1rem);
 }
 
 .primary-button {
@@ -158,37 +169,39 @@ textarea {
 
 .result-section {
     text-align: center;
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 
 .result-display {
-    margin: 0.75rem 0;
-    padding: 2rem;
+    margin: 0.5rem 0 0.75rem 0;
+    padding: 1.75rem;
     background-color: #f8f8f8;
     border-radius: 1rem;
-    flex: 2;
+    flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     min-height: auto;
-}
-
-.result-display h2 {
-    color: var(--background-color);
-    margin-bottom: 1.5rem;
+    max-height: none;
 }
 
 .winner-name {
-    font-size: 3.5rem;
+    font-size: clamp(2rem, 5vw, 3.5rem);
     font-weight: bold;
     color: var(--background-color);
     margin-bottom: 2rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    flex-shrink: 0;
 }
 
 .result-info {
     color: var(--background-color);
-    font-size: 1.2rem;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    flex-shrink: 0;
 }
 
 .history-section {
@@ -213,11 +226,16 @@ textarea {
 
 .last-winners-section {
     text-align: center;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    margin-bottom: 0.5rem;
 }
 
 .last-winners-display {
-    margin: 0.75rem 0 0.5rem 0;
-    padding: 1rem;
+    margin: 0.5rem 0;
+    padding: 0.75rem;
     background-color: var(--background-color);
     border-radius: 1rem;
     display: flex;
@@ -225,13 +243,15 @@ textarea {
     justify-content: center;
     align-items: center;
     flex: 1;
+    max-height: none;
 }
 
 .last-winners-title {
     color: var(--secondary-color);
-    font-size: 1.2rem;
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
     margin-bottom: 1rem;
     font-weight: 600;
+    flex-shrink: 0;
 }
 
 .last-winners-list {
@@ -239,15 +259,17 @@ textarea {
     flex-direction: column;
     gap: 0.5rem;
     width: 100%;
+    overflow-y: auto;
 }
 
 .last-winner-item {
-    font-size: 1.5rem;
+    font-size: clamp(1rem, 2.5vw, 1.5rem);
     color: #151515;
     padding: 0.5rem;
     background-color: #FFFFFF;
     border-radius: 0.5rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    flex-shrink: 0;
 }
 
 footer {
@@ -257,35 +279,19 @@ footer {
     flex-shrink: 0;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1024px) {
     .container {
-        padding: 1rem;
+        width: 90vw;
+        height: 80vh;
     }
-
+    
     .card {
-        padding: 1rem;
+        padding: 1.25rem;
+        max-height: calc(80vh - 2.5rem);
     }
-
-    .winner-name {
-        font-size: 2.5rem;
-    }
-
+    
     .controls {
-        flex-direction: column;
-    }
-
-    .result-display {
-        padding: 2rem;
-        min-height: 250px;
-    }
-
-    .last-winners-display {
-        padding: 1.5rem;
-        min-height: 120px;
-    }
-
-    .last-winner-item {
-        font-size: 1.2rem;
+        padding: 0 1.5rem;
     }
 }
 
