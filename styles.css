@@ -1,0 +1,297 @@
+:root {
+    --primary-color: #f8f8f8;
+    --secondary-color: #f8f8f8;
+    --background-color: #5338f5;
+    --card-background: #151515;
+    --text-color: #FFFFFF;
+    --border-color: #E5E7EB;
+    --load-button-color: #f8f8f8;
+    --draw-button-color: #f8f8f8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: var(--background-color);
+    background-image: url('./FUNDO APP.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: var(--text-color);
+    line-height: 1.5;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.container {
+    width: 1000px;
+    height: 680px;
+    margin: 0 auto;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    flex-shrink: 0;
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+
+header p {
+    color: var(--secondary-color);
+}
+
+.card {
+    background-color: var(--card-background);
+    border-radius: 1rem;
+    padding: 1.5rem 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+    max-height: 680px;
+}
+
+.input-section {
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+h2 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-label {
+    display: inline-block;
+    padding: 0.75rem 2rem;
+    background-color: #4338CA;
+    color: white;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+#fileName {
+    margin-left: 1rem;
+    color: var(--secondary-color);
+}
+
+textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 0.5rem;
+    resize: vertical;
+    font-family: inherit;
+}
+
+.text-center {
+    text-align: center;
+    margin: 1rem 0;
+    color: var(--secondary-color);
+}
+
+.status-info {
+    margin-top: 1rem;
+    color: var(--secondary-color);
+    font-size: 1.1rem;
+}
+
+.controls {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    padding: 0 3rem;
+}
+
+.primary-button, .secondary-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+}
+
+.primary-button {
+    background-color: #4338CA;
+    color: white;
+    flex: 1;
+}
+
+.secondary-button {
+    background-color: #4B5563;
+    color: white;
+    flex: 1;
+}
+
+.result-section {
+    text-align: center;
+}
+
+.result-display {
+    margin: 0.75rem 0;
+    padding: 2rem;
+    background-color: #f8f8f8;
+    border-radius: 1rem;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: auto;
+}
+
+.result-display h2 {
+    color: var(--background-color);
+    margin-bottom: 1.5rem;
+}
+
+.winner-name {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: var(--background-color);
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.result-info {
+    color: var(--background-color);
+    font-size: 1.2rem;
+}
+
+.history-section {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.history-section h3 {
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.history-list {
+    list-style: none;
+}
+
+.history-list li {
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--secondary-color);
+}
+
+.last-winners-section {
+    text-align: center;
+}
+
+.last-winners-display {
+    margin: 0.75rem 0 0.5rem 0;
+    padding: 1rem;
+    background-color: var(--background-color);
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+.last-winners-title {
+    color: var(--secondary-color);
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.last-winners-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+}
+
+.last-winner-item {
+    font-size: 1.5rem;
+    color: #151515;
+    padding: 0.5rem;
+    background-color: #FFFFFF;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+footer {
+    text-align: center;
+    margin-top: 1rem;
+    color: var(--secondary-color);
+    flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .card {
+        padding: 1rem;
+    }
+
+    .winner-name {
+        font-size: 2.5rem;
+    }
+
+    .controls {
+        flex-direction: column;
+    }
+
+    .result-display {
+        padding: 2rem;
+        min-height: 250px;
+    }
+
+    .last-winners-display {
+        padding: 1.5rem;
+        min-height: 120px;
+    }
+
+    .last-winner-item {
+        font-size: 1.2rem;
+    }
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+} 

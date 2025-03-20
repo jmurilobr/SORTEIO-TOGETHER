@@ -1,0 +1,39 @@
+{
+  "name": "sorteador-together",
+  "version": "1.0.0",
+  "description": "Aplicativo de sorteio com interface moderna",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:mac": "electron-builder --mac"
+  },
+  "author": "Together",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-builder": "^24.6.3"
+  },
+  "build": {
+    "appId": "com.together.sorteador",
+    "productName": "Sorteador Together",
+    "win": {
+      "target": "portable",
+      "icon": "icon.ico"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "category": "public.app-category.utilities",
+      "darkModeSupport": true
+    },
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!dist/**/*"
+    ]
+  }
+} 
