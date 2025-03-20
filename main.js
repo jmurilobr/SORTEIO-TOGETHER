@@ -8,8 +8,8 @@ let mainWindow;
 function createWindow() {
   // Cria a janela do navegador
   mainWindow = new BrowserWindow({
-    width: 1920,
-    height: 1080,
+    width: 1366,
+    height: 768,
     resizable: true,
     webPreferences: {
       nodeIntegration: true, 
@@ -17,7 +17,7 @@ function createWindow() {
       enableRemoteModule: true,
       webSecurity: false
     },
-    icon: path.join(__dirname, 'icon.ico')
+    icon: path.join(__dirname, 'win.ico')
   });
 
   // Remove a barra de menu

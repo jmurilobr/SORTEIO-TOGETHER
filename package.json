@@ -19,10 +19,11 @@
     "productName": "Sorteador Together",
     "win": {
       "target": "portable",
-      "icon": "icon.ico"
+      "icon": "win.ico"
     },
     "mac": {
       "target": ["dmg", "zip"],
+      "icon": "mac.icns",
       "category": "public.app-category.utilities",
       "darkModeSupport": true
     },
