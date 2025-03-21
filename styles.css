@@ -36,7 +36,7 @@ body {
 
 .container {
     width: 80vw;
-    height: 75vh;
+    height: 80vh;
     max-width: 1200px;
     margin: 0;
     padding: 1.5rem;
@@ -46,6 +46,7 @@ body {
     top: 53%;
     left: 50%;
     transform: translate(-50%, -50%);
+    overflow: visible;
 }
 
 header {
@@ -73,7 +74,7 @@ header p {
     display: flex;
     flex-direction: column;
     overflow: visible;
-    max-height: calc(75vh - 3rem);
+    max-height: none;
 }
 
 .input-section {
@@ -169,15 +170,16 @@ textarea {
 
 .result-section {
     text-align: center;
-    flex: 3;
+    flex: 5;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    overflow: visible;
+    margin-bottom: 1rem;
 }
 
 .result-display {
     margin: 0.5rem 0 0.75rem 0;
-    padding: 1.75rem;
+    padding: 1.5rem;
     background-color: #f8f8f8;
     border-radius: 1rem;
     flex: 1;
@@ -187,15 +189,19 @@ textarea {
     align-items: center;
     min-height: auto;
     max-height: none;
+    overflow: visible;
 }
 
 .winner-name {
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-size: clamp(1.7rem, 4vw, 2.8rem);
     font-weight: bold;
     color: var(--background-color);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     flex-shrink: 0;
+    max-width: 100%;
+    word-break: break-word;
+    line-height: 1.2;
 }
 
 .result-info {
@@ -230,7 +236,7 @@ textarea {
     display: flex;
     flex-direction: column;
     overflow: visible;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
 }
 
 .last-winners-display {
@@ -255,21 +261,20 @@ textarea {
 }
 
 .last-winners-list {
+    width: 100%;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    width: 100%;
-    overflow-y: auto;
 }
 
 .last-winner-item {
-    font-size: clamp(1rem, 2.5vw, 1.5rem);
-    color: #151515;
-    padding: 0.5rem;
-    background-color: #FFFFFF;
+    background-color: #3421b0;
     border-radius: 0.5rem;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    flex-shrink: 0;
+    padding: 0.5rem 1rem;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: var(--secondary-color);
+    word-break: break-word;
+    max-width: 100%;
 }
 
 footer {
