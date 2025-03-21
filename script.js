@@ -1,16 +1,13 @@
 // Elementos do DOM
 const fileInput = document.getElementById('fileInput');
-const participantsCount = document.getElementById('participantsCount');
 const drawButton = document.getElementById('drawButton');
 const resetButton = document.getElementById('resetButton');
 const winnerName = document.getElementById('winnerName');
 const resultInfo = document.querySelector('.result-info');
-const lastWinners = document.getElementById('lastWinners');
 
 // Estado da aplicação
 let participants = [];
 let drawnParticipants = new Set();
-let lastWinnersList = [];
 
 // Verificar se estamos em um ambiente Electron
 const isElectron = typeof require !== 'undefined';
@@ -201,24 +198,22 @@ function parseParticipants(content) {
 }
 
 function updateParticipantsCount() {
-    participantsCount.textContent = participants.length;
+    // Apenas habilita/desabilita o botão conforme necessário
     drawButton.disabled = participants.length === 0;
-}
-
-function updateLastWinners(winner) {
-    lastWinnersList.unshift(winner);
-    if (lastWinnersList.length > 2) {
-        lastWinnersList.pop();
-    }
-
-    const items = lastWinners.children;
-    for (let i = 0; i < items.length; i++) {
-        items[i].textContent = lastWinnersList[i] || '-';
+    
+    // Atualize a mensagem de status
+    if (participants.length > 0) {
+        resultInfo.textContent = "Lista carregada com sucesso!";
+    } else {
+        resultInfo.textContent = "Aguardando sorteio...";
     }
 }
 
 function performDraw() {
     if (participants.length === 0) return;
+
+    // Limpar a mensagem de status imediatamente ao iniciar o sorteio
+    resultInfo.textContent = "";
 
     const availableParticipants = participants.filter(p => !drawnParticipants.has(p));
     
@@ -243,8 +238,9 @@ function performDraw() {
             const winner = availableParticipants[Math.floor(Math.random() * availableParticipants.length)];
             winnerName.textContent = winner;
             drawnParticipants.add(winner);
-            resultInfo.textContent = `Participantes restantes: ${availableParticipants.length - 1}`;
-            updateLastWinners(winner);
+            
+            // Mantém a mensagem limpa após o sorteio
+            resultInfo.textContent = "";
         }
     }, interval);
 }
@@ -252,15 +248,8 @@ function performDraw() {
 function resetApplication() {
     participants = [];
     drawnParticipants.clear();
-    lastWinnersList = [];
     fileInput.value = '';
     winnerName.textContent = '?';
     resultInfo.textContent = 'Aguardando sorteio...';
     updateParticipantsCount();
-    
-    // Resetar últimos sorteados
-    const items = lastWinners.children;
-    for (let i = 0; i < items.length; i++) {
-        items[i].textContent = '-';
-    }
 } 

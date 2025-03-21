@@ -12,13 +12,12 @@
         <main>
             <div class="card">
                 <div class="input-section">
-                    <h2>Participantes</h2>
-                    <div class="input-group">
-                        <input type="file" id="fileInput" accept=".txt,.csv" class="file-input">
-                        <label for="fileInput" class="file-label">Carregar Lista</label>
-                    </div>
-                    <div class="status-info">
-                        <span id="participantsCount">0</span> participantes na lista
+                    <div class="header-container">
+                        <h2>Participantes</h2>
+                        <div class="input-group">
+                            <input type="file" id="fileInput" accept=".txt,.csv" class="file-input">
+                            <label for="fileInput" class="file-label">Carregar Lista</label>
+                        </div>
                     </div>
                 </div>
 
@@ -31,16 +30,6 @@
                     <div id="resultDisplay" class="result-display">
                         <div id="winnerName" class="winner-name">?</div>
                         <div class="result-info">Aguardando sorteio...</div>
-                    </div>
-                </div>
-
-                <div class="last-winners-section">
-                    <div class="last-winners-display">
-                        <div class="last-winners-title">Últimos Sorteados</div>
-                        <div id="lastWinners" class="last-winners-list">
-                            <div class="last-winner-item">-</div>
-                            <div class="last-winner-item">-</div>
-                        </div>
                     </div>
                 </div>
             </div>
