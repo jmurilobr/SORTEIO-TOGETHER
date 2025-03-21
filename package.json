@@ -1,6 +1,6 @@
 {
   "name": "sorteador-together",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Aplicativo de sorteio com interface moderna",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "electron-builder",
     "build:mac": "electron-builder --mac"
   },
-  "author": "Together",
+  "author": "Murilo Oliveira - ABC",
   "license": "ISC",
   "devDependencies": {
     "electron": "^25.0.0",
